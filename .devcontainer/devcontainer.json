@@ -1,0 +1,33 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/rocker-org/devcontainer-templates/tree/main/src/r-ver
+{
+	"name": "R (rocker/r-ver base)",
+	"image": "ghcr.io/rocker-org/devcontainer/tidyverse:4.4",
+	"features": {
+		"ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {},
+		"ghcr.io/devcontainers-contrib/features/starship:1": {}
+	},
+    "hostRequirements": {
+        "cpus": 4,
+        "memory": "8gb"
+    },
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"RDebugger.r-debugger",
+				"reditorsupport.r",
+				"streetsidesoftware.code-spell-checker"
+			]
+		}
+	},
+	"forwardPorts": [8787, 8888],
+    "portsAttributes": {
+        "8787": {
+            "label": "Rstudio",
+            "requireLocalPort": true,
+            "onAutoForward": "openBrowser"
+        }
+	},
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": ". ./.devcontainer/post-create.sh  > ../post-create-log.txt"
+}
