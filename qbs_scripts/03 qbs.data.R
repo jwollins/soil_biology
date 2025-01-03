@@ -4,6 +4,18 @@
 ## LAST EDIT: 25/01/2023
 ####
 
+
+setwd(dir = "~/Documents/GitHub/soil_biology/")
+
+# 00 PACKAGES ####
+
+source(file = "qbs_scripts/02 packages.R")
+
+
+
+# 00 FUNCTIONS ####
+
+
 # Function to round numeric columns to 2 decimal places
 round_numeric_columns <- function(df) {
   df[] <- lapply(df, function(x) if(is.numeric(x)) round(x, 2) else x)
@@ -11,8 +23,13 @@ round_numeric_columns <- function(df) {
 }
 
 
-## 01 LOAD DATA ####
-all_dat_count <- read_excel(path = "Data/all_years/qbs_data_all_years.xlsx", sheet = 1)
+
+
+# 01 LOAD DATA ####
+setwd(dir = "~/OneDrive - Harper Adams University/Data/QBS/")
+
+
+all_dat_count <- read_excel(path = "~/OneDrive - Harper Adams University/Data/QBS/Data/all_years/qbs_data_all_years.xlsx", sheet = 1)
 
 # remove NA's
 all_dat_count[is.na(all_dat_count)] <- 0
@@ -981,7 +998,7 @@ qbs_e_dat$Year <- as.factor(qbs_e_dat$Year)
 
 # Merge the two data frames on a common column (e.g., "Sample")
 # Use `left_join` to keep all rows from the main data, adding `NA` for missing samples in `emi_data`
-merged_data <- left_join(data, qbs_e_dat, by = c("Block", "Year"))
+merged_data <- left_join(data, qbs_e_dat, by = c("Block", "Year"), relationship = "many-to-many")
 
 
 
@@ -1009,7 +1026,10 @@ colnames(cor_long) <- c("Index1", "Index2", "Correlation")
 ggplot(cor_long, aes(x = Index1, y = Index2, fill = Correlation)) +
   geom_tile(color = "white") +
   scale_fill_viridis(option = "viridis", name = "Correlation") +  # Use viridis scale with "plasma" palette
-  geom_text(aes(label = round(Correlation, 2)), color = "white", size = 5, fontface = 4) +
+  geom_text(aes(label = round(Correlation, 2)), 
+            color = "white", 
+            # size = 5, 
+            fontface = 4) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(
@@ -1017,7 +1037,7 @@ ggplot(cor_long, aes(x = Index1, y = Index2, fill = Correlation)) +
        y = "Index")
 
 
-ggsave(filename = "Plots/figures/index_correlation_plot.png", width = 6, height = 4)
+ggsave(filename = "Plots/figures/index_correlation_plot.png", width = 5, height = 5)
 
 
 

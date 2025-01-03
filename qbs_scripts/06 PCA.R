@@ -5,8 +5,27 @@
 ####
 
 
+setwd(dir = "~/Documents/GitHub/soil_biology/")
+
+# 00 PACKAGES ####
+
+source(file = "qbs_scripts/02 packages.R")
+
+# 01 DATA ####
+
+source(file = "qbs_scripts/03 qbs.data.R")
+
+setwd(dir = "~/OneDrive - Harper Adams University/Data/QBS/")
+
+
 
 ## 01 ALL YEARS - SCALE - LOOP ####
+
+# Define the years of interest
+years <- c(2022, 2023, 2024)
+
+# Initialize a list to store each PCA plot
+pca_plots <- list()
 
 # Loop through each year
 for (i in seq_along(years)) {
@@ -137,12 +156,6 @@ ggsave(filename = "Plots/PCA/no_scale_pca/combined_pca_plot.png",
 
 
 ## 06 ALL YEARS - SCALE ####
-
-# Define the years of interest
-years <- c(2022, 2023, 2024)
-
-# Initialize a list to store each PCA plot
-pca_plots <- list()
 
 
 # Loop through each year
@@ -281,7 +294,8 @@ for (year in years) {
   
   # PCA plot
   pca.plot <- ggbiplot(pcobj = count.pca, 
-                       ellipse = FALSE,
+                       ellipse = TRUE,
+                       ellipse.fill = FALSE,
                        scale = 0.5,
                        groups = dat$Treatment, 
                        choices = c(1, 2),
@@ -339,6 +353,7 @@ years <- c(2022, 2023, 2024)
 
 # Initialize a list to store each PCA plot
 pca_plots <- list()
+scree_plots <- list()
 
 # Loop through each year
 for (i in seq_along(years)) {
@@ -361,7 +376,14 @@ for (i in seq_along(years)) {
   write.csv(x = count.pca$rotation, file = paste0("Statistics/PCA/pca_tax_order", year - 2021, ".principal.components.csv"))
   
   ### Scree Plot ###
-  scree_plot <- fviz_eig(count.pca, addlabels = TRUE, ylim = c(0, 50), main = paste("Scree plot Year", year))
+  scree_plot <- fviz_eig(X = count.pca, 
+                         ggtheme = theme_classic(),
+                         addlabels = TRUE, 
+                         ylim = c(0, 60), 
+                         main = paste("Scree plot Year", year))
+  
+  # Store each plot in the list
+  scree_plots[[i]] <- scree_plot
   
   # Create directory for scree plots
   dir.create("Plots/PCA/scree.plots/pca_tax_order/", showWarnings = FALSE, recursive = TRUE)
@@ -375,7 +397,8 @@ for (i in seq_along(years)) {
   
   # PCA plot
   pca.plot <- ggbiplot(pcobj = count.pca, 
-                       ellipse = FALSE,
+                       ellipse = TRUE,
+                       ellipse.fill = FALSE, ellipse.alpha = 0.5, ellipse.linewidth = 0.5,
                        scale = 1,
                        groups = dat$Treatment, 
                        choices = c(1, 2),
@@ -395,8 +418,10 @@ for (i in seq_along(years)) {
     theme_classic(base_size = 18) + 
     xlim(-4,4) +
     ylim(-4,4) +
-    geom_point(aes(x = mean.pca[1,2], y = mean.pca[1,3]), colour = "black", fill = "turquoise3", size = 2, stroke = 1, pch = 21) + 
-    geom_point(aes(x = mean.pca[2,2], y = mean.pca[2,3]), colour = "black", fill = "tomato2", size = 2, stroke = 1, pch = 21) +
+    geom_point(aes(x = mean.pca[1,2], y = mean.pca[1,3]), 
+               colour = "black", fill = "turquoise3", size = 2, stroke = 1, pch = 21) + 
+    geom_point(aes(x = mean.pca[2,2], y = mean.pca[2,3]), 
+               colour = "black", fill = "tomato2", size = 2, stroke = 1, pch = 21) +
     scale_color_manual(name = "Treatment", values = c("turquoise3", "tomato2")) +
     ggtitle(year)
   
@@ -440,17 +465,40 @@ for (i in seq_along(years)) {
 # Arrange and save all PCA plots in a single figure
 combined_pca_plot <- ggarrange(plotlist = pca_plots, 
                                labels = c("A", "B", "C"), 
-                               ncol = 2, 
-                               nrow = 2, 
+                               ncol = 3, 
+                               nrow = 1, 
                                common.legend = TRUE, 
                                legend = "bottom")
+
+combined_pca_plot
 
 # Save the combined plot
 ggsave(filename = "Plots/PCA/pca_tax_order/SD/Combined_PCA_Plots.png", 
        plot = combined_pca_plot, 
-       width = 12, 
-       height = 12, 
+       width = 15, 
+       height = 6, 
        dpi = 150)
+
+
+# plot scree plots 
+
+# Arrange and save all PCA plots in a single figure
+combined_scree_plot <- ggarrange(plotlist = scree_plots, 
+                               labels = c("A", "B", "C"), 
+                               ncol = 3, 
+                               nrow = 1, 
+                               common.legend = TRUE, 
+                               legend = "bottom")
+
+combined_scree_plot
+
+# Save the combined plot
+ggsave(filename = "Plots/PCA/scree.plots/pca_tax_order/Combined_scree_Plots.png", 
+       plot = combined_scree_plot, 
+       width = 10, 
+       height = 4, 
+       dpi = 150)
+
 
 
 
