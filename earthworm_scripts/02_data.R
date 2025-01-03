@@ -5,9 +5,15 @@
 
 ## 02 DATA ####
 
+
+setwd(dir = "~/Documents/GitHub/soil_biology/")
+
 ### 02.1 PACKAGES ####
 
-source(file = "scripts/01_packages.R")
+source(file = "earthworm_scripts/01_packages.R")
+
+
+setwd(dir = "~/OneDrive - Harper Adams University/Data/Soil/worms/")
 
 
 ### 02.2 READ DATA ####

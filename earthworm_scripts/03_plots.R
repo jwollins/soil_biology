@@ -3,6 +3,18 @@
 ### 2024-06-01
 ###
 
+setwd(dir = "~/Documents/GitHub/soil_biology/")
+
+# 00 PACKAGES ####
+
+source(file = "earthworm_scripts/01_packages.R")
+
+# 01 DATA ####
+
+source(file = "~/Documents/GitHub/soil_biology/earthworm_scripts/02_data.R")
+
+setwd(dir = "~/OneDrive - Harper Adams University/Data/Soil/worms/")
+
 ## 03 PLOTS ####
 
 
@@ -47,28 +59,28 @@ a <- ggplot(data = juvinile_sum,
                                     face = "bold.italic"), 
         axis.text.x=element_blank(),
         legend.position = "bottom") +
-  geom_errorbar(aes(ymin=mean-se, 
+  geom_errorbar(aes(ymin=mean-se,
                     ymax=mean+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01, 
-    annotations = "NS.", 
-    y_position = c(300) # Adjust y-position if necessary
-  ) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01,
-    annotations = "NS.",
-    y_position = c(300) # Adjust y-position if necessary
-  ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01, 
+  #   annotations = "NS.", 
+  #   y_position = c(300) # Adjust y-position if necessary
+  # ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01,
+  #   annotations = "NS.",
+  #   y_position = c(300) # Adjust y-position if necessary
+  # ) +
   facet_wrap(~ year, ncol = 3)
 
 
@@ -108,26 +120,26 @@ b <- ggplot(data = epigeic_sum,
                     ymax=mean+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01, 
-    annotations = "NS.", 
-    fontface = 'italic', 
-    y_position = c(85) # Adjust y-position if necessary
-  ) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01,
-    annotations = "NS.",
-    fontface = 'italic', 
-    y_position = c(85) # Adjust y-position if necessary
-  ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01, 
+  #   annotations = "NS.", 
+  #   fontface = 'italic', 
+  #   y_position = c(85) # Adjust y-position if necessary
+  # ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01,
+  #   annotations = "NS.",
+  #   fontface = 'italic', 
+  #   y_position = c(85) # Adjust y-position if necessary
+  # ) +
   facet_wrap(~ year, ncol = 3)
 
 b
@@ -175,26 +187,26 @@ c <- ggplot(data = anecic_sum,
                     ymax=mean+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01, 
-    annotations = "NS", 
-    fontface = 'italic', 
-    y_position = c(35) # Adjust y-position if necessary
-  ) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01,
-    annotations = "NS.",
-    fontface = 'italic', 
-    y_position = c(35) # Adjust y-position if necessary
-  ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01, 
+  #   annotations = "NS", 
+  #   fontface = 'italic', 
+  #   y_position = c(35) # Adjust y-position if necessary
+  # ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01,
+  #   annotations = "NS.",
+  #   fontface = 'italic', 
+  #   y_position = c(35) # Adjust y-position if necessary
+  # ) +
   facet_wrap(~ year, ncol = 3)
 
 # ggsave(filename = "anecic_m2_plot.png", 
@@ -234,26 +246,26 @@ d <- ggplot(data = endogeic_sum,
                     ymax=mean+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01, 
-    annotations = "NS",
-    fontface = 'italic', 
-    y_position = c(100) # Adjust y-position if necessary
-  ) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01,
-    annotations = "NS.",
-    fontface = 'italic', 
-    y_position = c(100) # Adjust y-position if necessary
-  ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01, 
+  #   annotations = "NS",
+  #   fontface = 'italic', 
+  #   y_position = c(100) # Adjust y-position if necessary
+  # ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01,
+  #   annotations = "NS.",
+  #   fontface = 'italic', 
+  #   y_position = c(100) # Adjust y-position if necessary
+  # ) +
   facet_wrap(~ year, ncol = 3)
 
 # ggsave(filename = "endogeic_m2_plot.png", 
@@ -298,26 +310,26 @@ e <- ggplot(data = total_worms_m2_sum,
                     ymax=mean+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01, 
-    annotations = "NS", 
-    fontface = 'italic', 
-    y_position = c(500) # Adjust y-position if necessary
-  ) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01,
-    annotations = "NS.",
-    fontface = 'italic',
-    y_position = c(500) # Adjust y-position if necessary
-  ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01, 
+  #   annotations = "NS", 
+  #   fontface = 'italic', 
+  #   y_position = c(500) # Adjust y-position if necessary
+  # ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01,
+  #   annotations = "NS.",
+  #   fontface = 'italic',
+  #   y_position = c(500) # Adjust y-position if necessary
+  # ) +
   facet_wrap(~ year, ncol = 3)
 
 # ggsave(filename = "total_worms_m2_plot.png", 
@@ -357,30 +369,30 @@ f <- ggplot(data = total_mass_g_m2_sum,
                                     face = "bold.italic"), 
         axis.text.x=element_blank(),
         legend.position = "bottom") +
-  geom_errorbar(aes(ymin=mean-se, 
+  geom_errorbar(aes(ymin=mean-se,
                     ymax=mean+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01, 
-    annotations = "NS", 
-    fontface = 'italic',
-    y_position = c(100) # Adjust y-position if necessary
-  ) +
-  geom_signif(
-    data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
-    comparisons = list(c("Conventional", "Conservation")),
-    map_signif_level = TRUE,
-    textsize = 4,
-    tip_length = 0.01,
-    annotations = "NS.",
-    fontface = 'italic',
-    y_position = c(100) # Adjust y-position if necessary
-  ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2022"), # Subset data for Crop1
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01, 
+  #   annotations = "NS", 
+  #   fontface = 'italic',
+  #   y_position = c(100) # Adjust y-position if necessary
+  # ) +
+  # geom_signif(
+  #   data = subset(juvinile_sum, year == "2023"), # Subset data for Crop2
+  #   comparisons = list(c("Conventional", "Conservation")),
+  #   map_signif_level = TRUE,
+  #   textsize = 4,
+  #   tip_length = 0.01,
+  #   annotations = "NS.",
+  #   fontface = 'italic',
+  #   y_position = c(100) # Adjust y-position if necessary
+  # ) +
   facet_wrap(~ year, ncol = 3)
 
 # ggsave(filename = "total_mass_g_m2_plot.png", 
@@ -389,6 +401,7 @@ f <- ggplot(data = total_mass_g_m2_sum,
 #        height = 6)
 
 
+# combined plot ####
 
 ggarrange(a,b,c,d,e,f, 
           ncol = 3, nrow = 2, 
@@ -396,5 +409,5 @@ ggarrange(a,b,c,d,e,f,
           legend = "bottom", 
           labels = c("A", "B", "C", "D", "E", "F"))
 
-ggsave(filename = "plots/worms_fig_plot.png", width = 10, height = 10)
+ggsave(filename = "plots/worms_fig_plot.png", width = 10, height = 6)
 
