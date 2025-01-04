@@ -50,6 +50,16 @@ all_dat$block <- factor(all_dat$block,
 all_dat$plot <- factor(all_dat$plot, 
                            levels = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
 
+all_dat$year <- factor(all_dat$year, 
+                       levels = c("2022", "2023", "2024"))
+
+print(unique(all_dat$crop))
+
+all_dat$crop <- factor(all_dat$crop, 
+                       levels = c("Spring Beans" , "Winter Wheat" , "Oilseed Rape" , "Spring Barley"))
+
+
+
 
 
 ### 02.3 SUMMARY STATS ####
