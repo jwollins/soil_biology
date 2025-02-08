@@ -86,9 +86,9 @@ fig1a <- ggplot(data = qbs_sum,
 fig1a
 
 
-# Save the plot to a file, using the column name in the file name
-file_name <- paste0("plots/figures/", "qbs_ar_score", "_fig.png")
-ggsave(filename = file_name, width = 8, height = 5, plot = fig1a)
+# # Save the plot to a file, using the column name in the file name
+# file_name <- paste0("plots/figures/", "qbs_ar_score", "_fig.png")
+# ggsave(filename = file_name, width = 8, height = 5, plot = fig1a)
 
 
 
@@ -317,7 +317,7 @@ cor_plot <- ggplot(data = cor_long,
     y = "Index")
 
 
-ggsave(filename = "Plots/figures/index_correlation_plot.png", width = 5, height = 5)
+# ggsave(filename = "Plots/figures/index_correlation_plot.png", width = 5, height = 5)
 
 
 
@@ -354,8 +354,8 @@ figure1
 
 ggsave(filename = "fig_1_plot.png", 
        path = "plots/figures/", 
-       width = 10, 
-       height = 8)
+       width = 12, 
+       height = 6)
 
 
 
@@ -704,10 +704,13 @@ fig2e <- ggplot(data = total_abun_sum,
              scales = 'free_x')
 
 
+fig2e
+
+
 dir.create(path = "Plots/barplots/total_abundance/")
 
-ggsave(filename = "total_abundance_barplot.png", 
-       path = "Plots/barplots/total_abundance/", width = 8, height = 5)
+# ggsave(filename = "total_abundance_barplot.png", 
+#        path = "Plots/barplots/total_abundance/", width = 8, height = 5)
 
 
 
@@ -747,8 +750,8 @@ figure2
 
 ggsave(filename = "fig_2_plot.png", 
        path = "plots/figures/", 
-       width = 10, 
-       height = 8)
+       width = 12, 
+       height = 6)
 
 
 
