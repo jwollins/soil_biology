@@ -1,0 +1,581 @@
+---
+title: "plots_soil_biology"
+author: "Joe Collins"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+#___________________________________________
+# Setup
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rstudioapi::getActiveProject())
+
+# PACKAGES ####
+
+library(dplyr)
+library(purrr) # For list filtering
+library(stringr) # replace characters
+library(ggplot2) # plotting 
+library(tidyr)
+library(ggpubr)
+library(readxl)
+```
+
+
+#___________________________________________
+# Data
+
+```{r data}
+
+
+
+worm_dat <- read_excel(path = "sym_link_soil_biology/Data/earthworm_data/earthworm_data.xlsx", sheet = 1) 
+
+# remove NA's
+worm_dat[is.na(worm_dat)] <- 0
+
+
+worm_dat$Year <- as.factor(worm_dat$Year)
+worm_dat$Treatment <- as.factor(worm_dat$Treatment)
+worm_dat$block <- as.factor(worm_dat$block)
+
+
+worm_dat$Treatment <- factor(worm_dat$Treatment, 
+                           levels = c("Conservation","Conventional"))
+
+
+```
+
+
+
+#___________________________________________
+# Worm Plots
+
+
+
+# ~ juvenile
+
+```{r juvenile, echo=FALSE}
+
+names(worm_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- worm_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(juveniles_m2),
+    sd = sd(juveniles_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+    
+ p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Juvenile~Earthworms~(m^{-2})),
+        subtitle = expression(Juvenile~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- worm_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(juveniles_m2),
+    sd = sd(juveniles_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Juvenile~Earthworms~(m^{-2})),
+        subtitle = expression(Juvenile~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/earthworms/fig_juvenile_worms_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+# ~ epigeic 
+
+```{r epigeic , echo=FALSE}
+
+names(worm_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- worm_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(epigeic_m2),
+    sd = sd(epigeic_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+    
+ p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Epigeic~Earthworms~(m^{-2})),
+        subtitle = expression(Epigeic~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- worm_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(epigeic_m2),
+    sd = sd(epigeic_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Epigeic~Earthworms~(m^{-2})),
+        subtitle = expression(Epigeic~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom"
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/earthworms/fig_epigeic_worms_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+
+# ~ endogeic 
+
+```{r endogeic , echo=FALSE}
+
+names(worm_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- worm_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(endogeic_m2),
+    sd = sd(endogeic_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+    
+ p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Endogeic~Earthworms~(m^{-2})),
+        subtitle = expression(Endogeic~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- worm_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(endogeic_m2),
+    sd = sd(endogeic_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Endogeic~Earthworms~(m^{-2})),
+        subtitle = expression(Endogeic~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom") +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/earthworms/fig_endogeic_worms_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+
+
+
+# ~ anecic
+
+```{r anecic , echo=FALSE}
+
+names(worm_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- worm_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(anecic_m2),
+    sd = sd(anecic_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+    
+ p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Anecic~Earthworms~(m^{-2})),
+        subtitle = expression(Anecic~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom") +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- worm_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(anecic_m2),
+    sd = sd(anecic_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Anecic~Earthworms~(m^{-2})),
+        subtitle = expression(Anecic~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom") +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/earthworms/fig_anecic_worms_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+# ~ total worms
+
+```{r Total worms , echo=FALSE}
+
+names(worm_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- worm_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(total_worms_m2),
+    sd = sd(total_worms_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+    
+ p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Total~Earthworms~(m^{-2})),
+        subtitle = expression(Total~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom") +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- worm_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(total_worms_m2),
+    sd = sd(total_worms_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      # ylim(0,25) +
+      labs(
+        x = "Treatment",
+        y = expression(Total~Earthworms~(m^{-2})),
+        subtitle = expression(Total~Earthworms~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom") +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/earthworms/fig_total_worms_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```

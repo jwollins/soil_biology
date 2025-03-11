@@ -3,22 +3,34 @@
 ### 2024-06-01
 ###
 
-## 02 DATA ####
+#__________________________________________####
+# Set wd ####
+
+setwd(rstudioapi::getActiveProject())
+
+getwd()
 
 
-setwd(dir = "~/Documents/GitHub/soil_biology/")
 
-### 02.1 PACKAGES ####
+
+
+
+#__________________________________________####
+# PACKAGES ####
 
 source(file = "earthworm_scripts/01_packages.R")
 
 
-setwd(dir = "~/OneDrive - Harper Adams University/Data/Soil/worms/")
 
 
-### 02.2 READ DATA ####
 
-dat_2023 <- read_xlsx(path = "data/2023_worm_data.xlsx", 
+
+
+
+#__________________________________________####
+# DATA ####
+
+dat_2023 <- read_xlsx(path = "sym_link_soil_biology/data/2023_worm_data.xlsx", 
                  sheet = 1, 
                  col_names = TRUE)
 

@@ -1,19 +1,31 @@
-# 03 DATA ####
+# DATA ####
 ## WHO: JOE COLLINS
 ## WHAT: Load QBS data
 ## LAST EDIT: 25/01/2023
 ####
 
 
-setwd(dir = "~/Documents/GitHub/soil_biology/")
+#__________________________________________####
+# Set wd ####
 
-# 00 PACKAGES ####
+setwd(rstudioapi::getActiveProject())
+
+getwd()
+
+
+
+
+#__________________________________________####
+# PACKAGES ####
 
 source(file = "qbs_scripts/02 packages.R")
 
 
 
-# 00 FUNCTIONS ####
+
+
+#__________________________________________####
+# FUNCTIONS ####
 
 
 # Function to round numeric columns to 2 decimal places
@@ -25,18 +37,20 @@ round_numeric_columns <- function(df) {
 
 
 
-# 01 LOAD DATA ####
-setwd(dir = "~/OneDrive - Harper Adams University/Data/QBS/")
 
 
-all_dat_count <- read_excel(path = "~/OneDrive - Harper Adams University/Data/QBS/Data/all_years/qbs_data_all_years.xlsx", sheet = 1)
+
+#__________________________________________####
+# LOAD DATA ####
+
+
+
+all_dat_count <- read_excel(path = "sym_link_soil_biology/Data/all_years/qbs_data_all_years.xlsx", sheet = 1)
 
 # remove NA's
 all_dat_count[is.na(all_dat_count)] <- 0
 
-
-
-### 01.1 factors ####
+# ~ Factors ####
 
 all_dat_count$Year <- factor(all_dat_count$Year)
 all_dat_count$Block <- factor(all_dat_count$Block)
@@ -46,7 +60,11 @@ all_dat_count$Treatment <- factor(all_dat_count$Treatment)
 
 
 
-## 02 Stats summary ####
+
+
+
+#__________________________________________####
+#  Stats summary ####
 
 # Define the column range for which you want to calculate summaries by column number
 start_col <- 18  # starting column number
@@ -85,11 +103,15 @@ final_summary <- bind_rows(summary_list)
 
 final_summary <- round_numeric_columns(final_summary)
 
-write.csv(x = final_summary, file = "Statistics/summary.stats/abundance_summary_stats.csv", row.names = FALSE)
+write.csv(x = final_summary, file = "sym_link_soil_biology/Statistics/summary.stats/abundance_summary_stats.csv", row.names = FALSE)
 
 
 
-### 02.1 total abundance ####
+
+
+
+
+# ~ total abundance ####
 
 total_abun_dat <- all_dat_count[,1:17]
 
@@ -124,7 +146,7 @@ write.csv(x = total_abun_sum, file = "Statistics/summary.stats/total_abun_sum.cs
 
 
 
-## 03 Taxanomic order ####
+# ~ Taxanomic order ####
 
 
 # calculate the sum of the taxonomic orders
@@ -184,7 +206,13 @@ tax_ord_dat$Hexapoda <- all_dat_count$Colem_Epigeic +
 
 
 
-### 07.1 tax ord summary table ####
+
+
+
+
+
+
+# ~ tax ord summary table ####
 
 
 # Define the column range for which you want to calculate summaries by column number
@@ -227,9 +255,19 @@ tax_ord_summary <- round_numeric_columns(tax_ord_summary)
 write.csv(x = tax_ord_summary, file = "Statistics/summary.stats/tax_ord_sum_stats.csv", row.names = FALSE)
 
 
-## 04 QBS-ar calculation ####
+
+
+
+
+
+
+
+
+# ~ QBS-ar calculation ####
 
 qbs_emi_values <- read.csv(file = "Data/qbs_emi_values.csv")
+
+
 
 # =IF(COUNT_TABLE[@[Colem.Epigeic]]>0,'EMI Values'!$F$2,0)
 
@@ -442,12 +480,20 @@ qbs_sum <- qbs_dat %>%
 
 qbs_sum <- round_numeric_columns(qbs_sum)
 
-write.csv(x = qbs_sum, file = "Statistics/summary.stats/qbs_ar_summary.csv", row.names = FALSE)
+
+
+write.csv(x = qbs_sum, file = "sym_link_soil_biology/Statistics/summary.stats/qbs_ar_summary.csv", row.names = FALSE)
 
 
 
 
-### QBS-ar summary stats loop ####
+
+
+
+
+
+
+# ~ QBS-ar summary stats loop ####
 
 # Define the column range for which you want to calculate summaries by column number
 start_col <- 18  # starting column number
@@ -486,13 +532,18 @@ qbs_dat_summary <- bind_rows(qbs_dat_list)
 
 qbs_dat_summary <- round_numeric_columns(qbs_dat_summary)
 
-write.csv(x = qbs_dat_summary, file = "Statistics/summary.stats/QBS_ar_score_summary_stats.csv", row.names = FALSE)
+write.csv(x = qbs_dat_summary, file = "sym_link_soil_biology/Statistics/summary.stats/QBS_ar_score_summary_stats.csv", row.names = FALSE)
 
 
 
 
 
-## 05 QBS-c calculation ####
+
+
+
+
+
+# ~ QBS-c calculation ####
 
 qbs_c <- qbs_dat[,1:18]
 
@@ -523,7 +574,7 @@ qbs_c_sum <- qbs_c %>%
 
 qbs_c_sum <- round_numeric_columns(qbs_c_sum)
 
-write.csv(x = qbs_c_sum, file = "Statistics/glm_outputs/qbs_c/qbs_c_summary_stats.csv", row.names = FALSE)
+write.csv(x = qbs_c_sum, file = "sym_link_soil_biology/Statistics/glm_outputs/qbs_c/qbs_c_summary_stats.csv", row.names = FALSE)
 
 
 
@@ -566,7 +617,7 @@ qbs_c_dat_summary <- bind_rows(qbs_dat_list)
 
 qbs_c_dat_summary <- round_numeric_columns(qbs_c_dat_summary)
 
-write.csv(x = qbs_c_dat_summary, file = "Statistics/summary.stats/QBS_c_score_summary_stats.csv", row.names = FALSE)
+write.csv(x = qbs_c_dat_summary, file = "sym_link_soil_biology/Statistics/summary.stats/QBS_c_score_summary_stats.csv", row.names = FALSE)
 
 
 
@@ -576,10 +627,13 @@ write.csv(x = qbs_c_dat_summary, file = "Statistics/summary.stats/QBS_c_score_su
 
 
 
-## 06 Earthworm data ####
 
 
-worm_dat <- read_excel(path = "Data/earthworm_data/earthworm_data.xlsx", sheet = 1)
+
+# ~ Earthworm data ####
+
+
+worm_dat <- read_excel(path = "sym_link_soil_biology/Data/earthworm_data/earthworm_data.xlsx", sheet = 1) 
 
 # remove NA's
 worm_dat[is.na(worm_dat)] <- 0
@@ -621,14 +675,17 @@ worm_dat_summary <- bind_rows(worm_dat_list)
 
 worm_dat_summary <- round_numeric_columns(worm_dat_summary)
 
-write.csv(x = worm_dat_summary, file = "Statistics/summary.stats/earthworm_summary_stats.csv", row.names = FALSE)
+write.csv(x = worm_dat_summary, file = "sym_link_soil_biology/Statistics/summary.stats/earthworm_summary_stats.csv", row.names = FALSE)
 
 
 
 
 
 
-## 07 QBS-e ####
+
+
+
+# ~ QBS-e ####
 
 
 # Initialize qbs_dat with the same dimensions as all_dat_count and set to 0 initially
@@ -651,7 +708,7 @@ qbs_e_dat$qbs_score <- rowSums( qbs_e_dat[,7:ncol(qbs_e_dat)])
 
 
 
-### QBS-e summary stats loop ####
+# ~ QBS-e summary stats loop ####
 
 # Define the column range for which you want to calculate summaries by column number
 start_col <- 7  # starting column number
@@ -714,7 +771,7 @@ qbs_e_sum <- write.csv(x = qbs_e_sum, file = "Statistics/summary.stats/qbs_e_sum
 
 
 
-## 08 Shannon Index ####
+# ~ Shannon Index ####
 
 shannon_data <- all_dat_count
 
@@ -749,7 +806,11 @@ write.csv(x = shannon_sum, file = "Statistics/summary.stats/shannon_index_summar
 
 
 
-## 09 Overdisperal ####
+
+
+
+#__________________________________________####
+# ~ Overdisperal ####
 
 
 ### abundance ####
@@ -797,7 +858,11 @@ write.csv(results_df, file = "Statistics/overdispersion/abundance_overdispersion
 
 
 
-### qbs-ar ####
+
+
+
+
+# ~ qbs-ar ####
 
 data <- qbs_dat[,18:ncol(qbs_dat)]
 
@@ -843,7 +908,7 @@ write.csv(results_df, file = "Statistics/overdispersion/qbs_ar_overdispersion.cs
 
 
 
-### qbs-c ####
+# ~ qbs-c ####
 
 data <- qbs_c[,18:ncol(qbs_c)]
 
@@ -888,7 +953,13 @@ write.csv(results_df, file = "Statistics/overdispersion/qbs_c_overdispersion.csv
 
 
 
-### qbs-e ####
+
+
+
+
+
+
+# ~ qbs-e ####
 
 data <- qbs_e_dat[,7:ncol(qbs_e_dat)]
 
@@ -934,7 +1005,11 @@ write.csv(results_df, file = "Statistics/overdispersion/qbs_e_overdispersion.csv
 
 
 
-## INDEX COMPARISON ####
+
+
+
+#__________________________________________####
+# INDEX COMPARISON ####
 
 biodiv_index_dat <- all_dat_count[,1:4]
 biodiv_index_dat$shannon_index <- shannon_data$Shannon_Index
