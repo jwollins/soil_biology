@@ -57,6 +57,7 @@ all_dat_count$Block <- factor(all_dat_count$Block)
 all_dat_count$Treatment <- factor(all_dat_count$Treatment)
 
 
+dat <- all_dat_count
 
 
 
@@ -110,8 +111,13 @@ write.csv(x = final_summary, file = "sym_link_soil_biology/Statistics/summary.st
 
 
 
-
+#________####
 # ~ total abundance ####
+
+
+
+
+## ~~ calculate ####
 
 total_abun_dat <- all_dat_count[,1:17]
 
@@ -119,7 +125,28 @@ total_abun_dat <- all_dat_count[,1:17]
 # Assuming you want the row sums from columns 18 to the last column
 total_abun_dat$total_abundance <- rowSums(all_dat_count[, 18:ncol(all_dat_count)])
 
-# generate summary stats for the qbs score
+
+# # add this to large dataset! 
+# 
+# dat$total_abundance <- rowSums(all_dat_count[, 18:ncol(all_dat_count)])
+
+total_abun_dat$total_abundance_m2 <- dat$total_abundance * 100
+
+# and save the total abundace data 
+
+write.csv(x = total_abun_dat, file = "sym_link_soil_biology/Data/processed_data/abundance_data.csv")
+
+
+
+
+
+
+
+## ~~ summary stats ####
+
+
+
+# generate summary stats for abundance
 total_abun_sum <- total_abun_dat %>%
   group_by(Treatment, Year) %>%
   summarise(
@@ -146,6 +173,9 @@ write.csv(x = total_abun_sum, file = "Statistics/summary.stats/total_abun_sum.cs
 
 
 
+
+
+#_______####
 # ~ Taxanomic order ####
 
 
@@ -205,6 +235,22 @@ tax_ord_dat$Hexapoda <- all_dat_count$Colem_Epigeic +
 
 
 
+# by m2 
+
+tax_ord_dat$Chelicerata_m2 <- tax_ord_dat$Chelicerata * 100
+
+tax_ord_dat$Crustacea_m2 <- tax_ord_dat$Crustacea * 100
+
+tax_ord_dat$Myriapoda_m2 <- tax_ord_dat$Myriapoda * 100
+
+tax_ord_dat$Hexapoda_m2 <-  tax_ord_dat$Hexapoda * 100
+
+
+# save taxonomic order data 
+
+dir.create(path = "sym_link_soil_biology/Data/processed_data/")
+
+write.csv(x = tax_ord_dat, file = "sym_link_soil_biology/Data/processed_data/taxanomic_order_data.csv")
 
 
 
@@ -265,7 +311,7 @@ write.csv(x = tax_ord_summary, file = "Statistics/summary.stats/tax_ord_sum_stat
 
 # ~ QBS-ar calculation ####
 
-qbs_emi_values <- read.csv(file = "Data/qbs_emi_values.csv")
+qbs_emi_values <- read.csv(file = "sym_link_soil_biology/Data/qbs_emi_values.csv")
 
 
 
@@ -460,6 +506,15 @@ qbs_dat$Other_holometabolos <- if_else(condition = all_dat_count$Other_holometab
 qbs_dat$qbs_score <- rowSums( qbs_dat[,18:ncol(qbs_dat)])
 
 
+
+# save the qbs data 
+
+write.csv(x = qbs_dat, file = "sym_link_soil_biology/Data/processed_data/qbs_ar_score_data.csv")
+
+
+
+
+
 # generate summary stats for the qbs score
 qbs_sum <- qbs_dat %>%
   group_by(Treatment, Year) %>%
@@ -542,8 +597,12 @@ write.csv(x = qbs_dat_summary, file = "sym_link_soil_biology/Statistics/summary.
 
 
 
+#________####
+# ~ QBS-c ####
 
-# ~ QBS-c calculation ####
+
+
+## ~~ calculation #### 
 
 qbs_c <- qbs_dat[,1:18]
 
@@ -556,6 +615,18 @@ qbs_c$Colem_Eudaphic <- all_dat_count$Colem_Eudaphic * 20
 
 # calculate the total qbs score
 qbs_c$qbs_c_score <- rowSums( qbs_c[,18:ncol(qbs_c)])
+
+
+# save the qbs-c data 
+
+write.csv(x = qbs_c, file = "sym_link_soil_biology/Data/processed_data/qbs_c_data.csv")
+
+
+
+
+
+
+## ~~ summary stats ####
 
 
 # generate summary stats for the qbs score
@@ -633,6 +704,8 @@ write.csv(x = qbs_c_dat_summary, file = "sym_link_soil_biology/Statistics/summar
 # ~ Earthworm data ####
 
 
+## ~~ summary stats ####
+
 worm_dat <- read_excel(path = "sym_link_soil_biology/Data/earthworm_data/earthworm_data.xlsx", sheet = 1) 
 
 # remove NA's
@@ -684,9 +757,11 @@ write.csv(x = worm_dat_summary, file = "sym_link_soil_biology/Statistics/summary
 
 
 
-
+#_________####
 # ~ QBS-e ####
 
+
+## ~~ calculations ####
 
 # Initialize qbs_dat with the same dimensions as all_dat_count and set to 0 initially
 qbs_e_dat <- data.frame(matrix(0, nrow = nrow(worm_dat), ncol = ncol(worm_dat[,1:5])))
@@ -708,7 +783,7 @@ qbs_e_dat$qbs_score <- rowSums( qbs_e_dat[,7:ncol(qbs_e_dat)])
 
 
 
-# ~ QBS-e summary stats loop ####
+## ~~ summary stats loop ####
 
 # Define the column range for which you want to calculate summaries by column number
 start_col <- 7  # starting column number
@@ -751,6 +826,10 @@ write.csv(x = qbs_e_dat_summary, file = "Statistics/summary.stats/QBS_e_score_su
 
 
 
+
+
+## ~~ summary stats ####
+
 # generate summary stats for the qbs-e score
 qbs_e_sum <- qbs_e_dat %>%
   group_by(Treatment, Year) %>%
@@ -767,11 +846,19 @@ qbs_e_sum <- qbs_e_dat %>%
 
 qbs_e_sum <- round_numeric_columns(qbs_e_sum)
 
-qbs_e_sum <- write.csv(x = qbs_e_sum, file = "Statistics/summary.stats/qbs_e_sum.csv", row.names = FALSE)
+write.csv(x = qbs_e_sum, file = "Statistics/summary.stats/qbs_e_sum.csv", row.names = FALSE)
 
 
 
+
+
+
+
+#_________####
 # ~ Shannon Index ####
+
+
+## ~~ calculate ####
 
 shannon_data <- all_dat_count
 
@@ -783,6 +870,13 @@ shannon_index <- diversity(count_data, index = "shannon")
 
 # Add the Shannon index to the original data
 shannon_data$Shannon_Index <- shannon_index
+
+
+
+
+
+
+## ~~ summary stats ####
 
 shannon_sum <- shannon_data %>%
   group_by(Treatment, Year) %>%
@@ -1017,8 +1111,8 @@ biodiv_index_dat$qbs_ar_index <- qbs_dat$qbs_score
 biodiv_index_dat$qbs_c_index <- qbs_c$qbs_c_score
 # biodiv_index_dat$qbs_e_index <- qbs_e_dat$qbs_score
 
-dir.create(path = "Data/EMI_indexes/")
-write.csv(x = biodiv_index_dat, file = "Data/EMI_indexes/biodiv_index_dat.csv")
+# dir.create(path = "Data/EMI_indexes/")
+write.csv(x = biodiv_index_dat, file = "sym_link_soil_biology/Data/EMI_indexes/biodiv_index_dat.csv")
 
 
 # Calculate correlation matrix for selected biodiversity indices

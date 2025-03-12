@@ -1,0 +1,479 @@
+---
+title: "plots_qbs"
+author: "Joe Collins"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+#___________________________________________
+# Setup
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rstudioapi::getActiveProject())
+
+# PACKAGES ####
+
+library(dplyr)
+library(purrr) # For list filtering
+library(stringr) # replace characters
+library(ggplot2) # plotting 
+library(tidyr)
+library(ggpubr)
+library(readxl)
+```
+
+
+
+
+#___________________________________________
+# Data
+
+```{r data}
+
+tax_dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/taxanomic_order_data.csv")
+
+# remove NA's
+tax_dat[is.na(tax_dat)] <- 0
+
+
+tax_dat$Year <- as.factor(tax_dat$Year)
+tax_dat$Treatment <- as.factor(tax_dat$Treatment)
+tax_dat$Block <- as.factor(tax_dat$Block)
+
+
+tax_dat$Treatment <- factor(tax_dat$Treatment, 
+                           levels = c("Conservation","Conventional"))
+
+```
+
+
+
+
+#___________________________________________
+# Tax order
+
+
+## Chelicerata
+
+```{r Chelicerata}
+
+names(tax_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- tax_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Chelicerata_m2),
+    sd = sd(Chelicerata_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,26000) +
+      labs(
+        x = "Treatment",
+        y = expression(Chelicerata~(m^{-2})),
+        subtitle = expression(Chelicerata~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- tax_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Chelicerata_m2),
+    sd = sd(Chelicerata_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,26000) +
+      labs(
+        x = "Treatment",
+        y = expression(Chelicerata~(m^{-2})),
+        subtitle = expression(Chelicerata~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/tax_order/fig_Chelicerata_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+## Crustacea_m2
+
+```{r Crustacea_m2}
+
+names(tax_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- tax_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Crustacea_m2),
+    sd = sd(Crustacea_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+       ylim(0,150) +
+      labs(
+        x = "Treatment",
+        y = expression(Crustacea~(m^{-2})),
+        subtitle = expression(Crustacea~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- tax_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Crustacea_m2),
+    sd = sd(Crustacea_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+       ylim(0,150) +
+      labs(
+        x = "Treatment",
+        y = expression(Crustacea~(m^{-2})),
+        subtitle = expression(Crustacea~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/tax_order/fig_Crustacea_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+## Myriapoda_m2
+
+```{r Myriapoda_m2}
+
+names(tax_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- tax_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Myriapoda_m2),
+    sd = sd(Myriapoda_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      ylim(0, 320) +
+      labs(
+        x = "Treatment",
+        y = expression(Myriapoda~(m^{-2})),
+        subtitle = expression(Myriapoda~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- tax_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Myriapoda_m2),
+    sd = sd(Myriapoda_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      ylim(0, 320) +
+      labs(
+        x = "Treatment",
+        y = expression(Myriapoda~(m^{-2})),
+        subtitle = expression(Myriapoda~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/tax_order/fig_Myriapoda_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+## Hexapoda_m2
+
+```{r Hexapoda_m2}
+
+names(tax_dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- tax_dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Hexapoda_m2),
+    sd = sd(Hexapoda_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      ylim(0, 60000) +
+      labs(
+        x = "Treatment",
+        y = expression(Hexapoda~(m^{-2})),
+        subtitle = expression(Hexapoda~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- tax_dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Hexapoda_m2),
+    sd = sd(Hexapoda_m2)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+      ylim(0, 60000) +
+      labs(
+        x = "Treatment",
+        y = expression(Hexapoda~(m^{-2})),
+        subtitle = expression(Hexapoda~(m^{-2})),
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/barplots/tax_order/fig_Hexapoda_m2.png",
+       width = 10, height = 3.5)
+
+
+
+```
