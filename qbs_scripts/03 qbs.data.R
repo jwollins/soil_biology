@@ -130,7 +130,7 @@ total_abun_dat$total_abundance <- rowSums(all_dat_count[, 18:ncol(all_dat_count)
 # 
 # dat$total_abundance <- rowSums(all_dat_count[, 18:ncol(all_dat_count)])
 
-total_abun_dat$total_abundance_m2 <- dat$total_abundance * 100
+total_abun_dat$total_abundance_m2 <- total_abun_dat$total_abundance * 100
 
 # and save the total abundace data 
 
@@ -166,7 +166,7 @@ total_abun_sum <- total_abun_dat %>%
 
 total_abun_sum <- round_numeric_columns(total_abun_sum)
 
-write.csv(x = total_abun_sum, file = "Statistics/summary.stats/total_abun_sum.csv", row.names = FALSE)
+write.csv(x = total_abun_sum, file = "sym_link_soil_biology/Statistics/summary.stats/total_abun_sum.csv", row.names = FALSE)
 
 
 
@@ -248,7 +248,7 @@ tax_ord_dat$Hexapoda_m2 <-  tax_ord_dat$Hexapoda * 100
 
 # save taxonomic order data 
 
-dir.create(path = "sym_link_soil_biology/Data/processed_data/")
+
 
 write.csv(x = tax_ord_dat, file = "sym_link_soil_biology/Data/processed_data/taxanomic_order_data.csv")
 
@@ -298,7 +298,7 @@ tax_ord_summary <- bind_rows(tax_ord_list)
 
 tax_ord_summary <- round_numeric_columns(tax_ord_summary)
 
-write.csv(x = tax_ord_summary, file = "Statistics/summary.stats/tax_ord_sum_stats.csv", row.names = FALSE)
+write.csv(x = tax_ord_summary, file = "sym_link_soil_biology/Statistics/summary.stats/tax_ord_sum_stats.csv", row.names = FALSE)
 
 
 
@@ -309,6 +309,12 @@ write.csv(x = tax_ord_summary, file = "Statistics/summary.stats/tax_ord_sum_stat
 
 
 
+
+
+
+
+
+#________####
 # ~ QBS-ar calculation ####
 
 qbs_emi_values <- read.csv(file = "sym_link_soil_biology/Data/qbs_emi_values.csv")
@@ -604,17 +610,30 @@ write.csv(x = qbs_dat_summary, file = "sym_link_soil_biology/Statistics/summary.
 
 ## ~~ calculation #### 
 
-qbs_c <- qbs_dat[,1:18]
+qbs_c <- qbs_dat[,1:17]
 
 
-qbs_c$Colem_Epigeic <- all_dat_count$Colem_Epigeic * 4
+# qbs_c$Colem_Epigeic <- all_dat_count$Colem_Epigeic * 4
+# 
+# qbs_c$Colem_Hemiedaphic <- all_dat_count$Colem_Hemiedaphic * 8
+# 
+# qbs_c$Colem_Eudaphic <- all_dat_count$Colem_Eudaphic * 20
 
-qbs_c$Colem_Hemiedaphic <- all_dat_count$Colem_Hemiedaphic * 8
 
-qbs_c$Colem_Eudaphic <- all_dat_count$Colem_Eudaphic * 20
+qbs_c$Colem_Epigeic <- if_else(condition = all_dat_count$Colem_Epigeic > 0, 
+                                 true = 4, 
+                                 false = 0)
+
+qbs_c$Colem_Hemiedaphic <- if_else(condition = all_dat_count$Colem_Hemiedaphic > 0, 
+                                     true = 8, 
+                                     false = 0)
+
+qbs_c$Colem_Eudaphic <- if_else(condition = all_dat_count$Colem_Eudaphic > 0, 
+                                  true = 20, 
+                                  false = 0)
 
 # calculate the total qbs score
-qbs_c$qbs_c_score <- rowSums( qbs_c[,18:ncol(qbs_c)])
+qbs_c$qbs_c_score <- rowSums( qbs_c[,c("Colem_Epigeic", "Colem_Hemiedaphic", "Colem_Eudaphic")])
 
 
 # save the qbs-c data 
@@ -701,6 +720,10 @@ write.csv(x = qbs_c_dat_summary, file = "sym_link_soil_biology/Statistics/summar
 
 
 
+
+
+
+#_________####
 # ~ Earthworm data ####
 
 
@@ -783,6 +806,13 @@ qbs_e_dat$qbs_score <- rowSums( qbs_e_dat[,7:ncol(qbs_e_dat)])
 
 
 
+# save the qbs-e data 
+
+write.csv(x = qbs_e_dat, file = "sym_link_soil_biology/Data/processed_data/qbs_e_data.csv")
+
+
+
+
 ## ~~ summary stats loop ####
 
 # Define the column range for which you want to calculate summaries by column number
@@ -822,7 +852,9 @@ qbs_e_dat_summary <- bind_rows(qbs_e_dat_list)
 
 qbs_e_dat_summary <- round_numeric_columns(qbs_e_dat_summary)
 
-write.csv(x = qbs_e_dat_summary, file = "Statistics/summary.stats/QBS_e_score_summary_stats.csv", row.names = FALSE)
+write.csv(x = qbs_e_dat_summary, 
+          file = "sym_link_soil_biology/Statistics/summary.stats/QBS_e_score_summary_stats.csv", 
+          row.names = FALSE)
 
 
 
@@ -846,7 +878,9 @@ qbs_e_sum <- qbs_e_dat %>%
 
 qbs_e_sum <- round_numeric_columns(qbs_e_sum)
 
-write.csv(x = qbs_e_sum, file = "Statistics/summary.stats/qbs_e_sum.csv", row.names = FALSE)
+write.csv(x = qbs_e_sum, 
+          file = "sym_link_soil_biology/Statistics/summary.stats/qbs_e_sum.csv", 
+          row.names = FALSE)
 
 
 
@@ -873,6 +907,14 @@ shannon_data$Shannon_Index <- shannon_index
 
 
 
+test <- shannon_data[, c(1:17, which(names(shannon_data) == "Shannon_Index"))]
+
+
+
+# save the qbs-e data 
+
+write.csv(x = test, 
+          file = "sym_link_soil_biology/Data/processed_data/shannon_data.csv")
 
 
 
@@ -894,7 +936,8 @@ shannon_sum <- shannon_data %>%
     ic = se * qt((1 - 0.05) / 2 + .5, n - 1)
   ) 
 
-write.csv(x = shannon_sum, file = "Statistics/summary.stats/shannon_index_summary.csv")
+write.csv(x = shannon_sum, 
+          file = "sym_link_soil_biology/Statistics/summary.stats/shannon_index_summary.csv")
 
 
 
@@ -947,7 +990,9 @@ results_df <- as.data.frame(do.call(rbind, results))
 colnames(results_df) <- c("Column", "Mean", "Var Count", "Overdispertion_ratio", "is_overdispersed")
 
 # Save results to CSV
-write.csv(results_df, file = "Statistics/overdispersion/abundance_overdispersion.csv", row.names = FALSE)
+write.csv(results_df, 
+          file = "sym_link_soil_biology/Statistics/overdispersion/abundance_overdispersion.csv", 
+          row.names = FALSE)
 
 
 
@@ -996,7 +1041,9 @@ results_df <- as.data.frame(do.call(rbind, results))
 colnames(results_df) <- c("Column", "Mean", "Var Count", "Overdispertion_ratio", "is_overdispersed")
 
 # Save results to CSV
-write.csv(results_df, file = "Statistics/overdispersion/qbs_ar_overdispersion.csv", row.names = FALSE)
+write.csv(results_df, 
+          file = "sym_link_soil_biology/Statistics/overdispersion/qbs_ar_overdispersion.csv", 
+          row.names = FALSE)
 
 
 
@@ -1043,7 +1090,9 @@ colnames(results_df) <- c("Column", "Mean", "Var Count", "Overdispertion_ratio",
 
 
 # Save results to CSV
-write.csv(results_df, file = "Statistics/overdispersion/qbs_c_overdispersion.csv", row.names = FALSE)
+write.csv(results_df, 
+          file = "sym_link_soil_biology/Statistics/overdispersion/qbs_c_overdispersion.csv", 
+          row.names = FALSE)
 
 
 
@@ -1094,7 +1143,9 @@ colnames(results_df) <- c("Column", "Mean", "Var Count", "Overdispertion_ratio",
 
 
 # Save results to CSV
-write.csv(results_df, file = "Statistics/overdispersion/qbs_e_overdispersion.csv", row.names = FALSE)
+write.csv(results_df, 
+          file = "sym_link_soil_biology/Statistics/overdispersion/qbs_e_overdispersion.csv", 
+          row.names = FALSE)
 
 
 
@@ -1206,7 +1257,7 @@ ggplot(cor_long, aes(x = Index1, y = Index2, fill = Correlation)) +
        y = "Index")
 
 
-ggsave(filename = "Plots/figures/index_correlation_plot.png", width = 5, height = 5)
+ggsave(filename = "sym_link_soil_biology/Plots/figures/index_correlation_plot.png", width = 5, height = 5)
 
 
 

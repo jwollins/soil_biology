@@ -1,0 +1,882 @@
+---
+title: "plots_qbs_c"
+author: "Joe Collins"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+#___________________________________________
+# Setup
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rstudioapi::getActiveProject())
+
+# PACKAGES ####
+
+library(dplyr)
+library(purrr) # For list filtering
+library(stringr) # replace characters
+library(ggplot2) # plotting 
+library(tidyr)
+library(ggpubr)
+library(readxl)
+```
+
+#___________________________________________
+# Data
+
+```{r data}
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/qbs_c_data.csv")
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                           levels = c("Conservation","Conventional"))
+
+```
+
+
+
+
+#___________________________________________
+# QBS C 
+
+
+## QBS C Total Score
+
+```{r qbs-c score}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(qbs_c_score),
+    sd = sd(qbs_c_score)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,7500) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean QBS-c Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(qbs_c_score),
+    sd = sd(qbs_c_score)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,7500) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean QBS-c Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/qbs_c_total_score.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+
+## QBS C Epigeic Collembola
+
+```{r qbs-c score}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Colem_Epigeic),
+    sd = sd(Colem_Epigeic)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+    ylim(0,200) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Epigeic Collembola Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Colem_Epigeic),
+    sd = sd(Colem_Epigeic)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,200) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Epigeic Collembola QBS-c Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/qbs_c_epigeic_collembola_score.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+## QBS C Colem_Hemiedaphic
+
+```{r Colem_Hemiedaphic}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Colem_Hemiedaphic),
+    sd = sd(Colem_Hemiedaphic)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+    ylim(0,1500) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Hemiedaphic Collembola Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Colem_Hemiedaphic),
+    sd = sd(Colem_Hemiedaphic)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,1500) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Hemiedaphic Collembola QBS-c Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/qbs_c_Colem_Hemiedaphic_score.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+## QBS C Colem_Eudaphic
+
+```{r Colem_Eudaphic}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Colem_Eudaphic),
+    sd = sd(Colem_Eudaphic)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+     ylim(0,6100) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Eudaphic Collembola Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Colem_Eudaphic),
+    sd = sd(Colem_Eudaphic)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+    ylim(0,6100) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Eudaphic Collembola QBS-c Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/qbs_c_Colem_Eudaphic_score.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+
+#___________________________________________
+# Data
+
+```{r data}
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/qbs_ar_score_data.csv")
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                           levels = c("Conservation","Conventional"))
+
+```
+
+
+
+#___________________________________________
+# QBS-ar
+
+
+## QBS-ar Total Score
+
+```{r qbs-c score}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(qbs_score),
+    sd = sd(qbs_score)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,120) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean QBS-ar Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(qbs_score),
+    sd = sd(qbs_score)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,120) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean QBS-ar Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/qbs_ar_total_score.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+#___________________________________________
+# Data
+
+```{r data}
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/qbs_e_data.csv")
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                           levels = c("Conservation","Conventional"))
+
+```
+
+
+
+#___________________________________________
+# QBS-e
+
+
+## QBS-e Total Score
+
+```{r qbs-e score}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(qbs_e_score),
+    sd = sd(qbs_e_score)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,1500) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean QBS-e Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(qbs_e_score),
+    sd = sd(qbs_e_score)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,1500) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean QBS-e Score",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/qbs_e_total_score.png",
+       width = 10, height = 3.5)
+
+
+
+```
+
+
+
+
+
+#___________________________________________
+# Shannon Diversity Index
+
+
+# ~ Data
+
+```{r data}
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/shannon_data.csv")
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                           levels = c("Conservation","Conventional"))
+
+```
+
+
+
+# ~ shannon plot
+
+
+```{r shannon index}
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Shannon_Index),
+    sd = sd(Shannon_Index)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+
+
+p1 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,1.6) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Shannon Biodiversity Index",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~ Year, 
+                 ncol = 4, 
+                 scales = 'free_x') 
+ 
+ 
+ 
+ summ <- dat %>%
+  group_by(Treatment) %>%
+  summarise( 
+    n=n(),
+    mean = mean(Shannon_Index),
+    sd = sd(Shannon_Index)
+  ) %>%
+  mutate( se=sd/sqrt(n))  %>%
+  mutate( ic=se * qt((1-0.05)/2 + .5, n-1))
+ 
+ summ$Year <- "All Years"  # Dummy variable for faceting
+
+ 
+ p2 <-   ggplot(data = summ, 
+           aes(x = Treatment, 
+               y = mean, 
+               fill = Treatment)) + 
+      geom_bar(stat = "identity", 
+               color = "black", 
+               position = "dodge") + 
+   ylim(0,1.6) +
+      labs(
+        x = "Treatment",
+        y = "Score",
+        subtitle = "Mean Shannon Biodiversity Index",
+        caption = "") +
+      theme_bw() +
+      scale_fill_manual(values=c("turquoise3","tomato2"), 
+                        name = "Treatment") +
+      theme(strip.text.x = element_text(size = 12, 
+                                        color = "black", 
+                                        face = "bold.italic"), 
+            legend.position = "bottom", 
+            # axis.text.x = element_blank()
+            ) +
+      geom_errorbar(aes(ymin = mean - se, 
+                        ymax = mean + se),
+                    width=.2,                    # Width of the error bars
+                    position=position_dodge(.9)) +
+      facet_wrap(~Year, ncol = 4)  # Ensure it matches `p1`
+ 
+ggarrange(p1,p2,
+          ncol = 2, nrow = 1,  
+          common.legend = TRUE,  # Use a common legend
+          legend = "bottom", 
+          labels = c("A", "B"),
+          widths = c(2, 1))  # Make first column twice as wide
+
+ggsave(filename = "sym_link_soil_biology/Plots/figures/fig_Shannon_Index.png",
+       width = 10, height = 3.5)
+
+
+
+```

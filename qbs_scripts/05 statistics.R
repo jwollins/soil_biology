@@ -370,6 +370,474 @@ ggsave(filename = "sym_link_soil_biology/Plots/model_diagnostics/model_diag_Hexa
 
 
 
+
+
+
+#__________________________________________####
+# QBS-c ####
+
+# ~ data ####
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/qbs_c_data.csv")
+
+
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                        levels = c("Conservation","Conventional"))
+
+
+
+
+
+
+
+
+
+# ~ Test for overdispersion ####
+
+names(dat)
+
+# Specify column numbers to test for overdispersion
+response_column_indices <- c(19:ncol(dat))  # Replace with the indices of the columns to test
+response_columns <- colnames(dat)[response_column_indices]  # Get the column names
+
+# Specify explanatory variables
+explanatory_columns <- c("Year", "Treatment")
+
+# Initialize a results list
+results_list <- lapply(response_columns, function(response_column) {
+  test_overdispersion(dat, response_column, explanatory_columns)
+})
+
+# Convert results into a dataframe
+results_df <- do.call(rbind, lapply(results_list, as.data.frame))
+
+# Print results
+print(results_df)
+
+
+
+
+
+
+
+# ~ QBS-c ####
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- 
+  dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n = n(),
+    mean = mean(qbs_c_score, na.rm = TRUE),
+    sd = sd(qbs_c_score, na.rm = TRUE)
+  ) %>%
+  mutate( se = sd/sqrt(n))  %>%
+  mutate( ic = se * qt((1-0.05)/2 + .5, n-1)) %>% 
+  arrange(Year)
+
+summ
+
+distribution_plots(data = dat, 
+                   variable = dat$qbs_c_score, 
+                   colour = dat$qbs_c_score)
+
+ggsave(filename = "sym_link_soil_biology/Plots/distributions/dist_qbs_c_score.png", width = 10, height = 2.25)
+
+
+
+# Find the smallest nonzero value in the dataset
+small_const <- min(dat$qbs_c_score[dat$qbs_c_score > 0]) * 0.01  # 1% of the smallest value
+
+# Add this small constant to avoid zeros
+dat$qbs_c_score_adj <- dat$qbs_c_score + small_const
+
+
+quasi_model <- glm(qbs_c_score ~ Treatment + as.factor(Year) + as.factor(Block), 
+                   data = dat, 
+                   family = quasipoisson(link = "log"))
+
+# View summary
+summary(quasi_model)
+
+# Run pairwise comparisons for the 'Treatment' factor
+pairwise_comparisons <- emmeans(quasi_model, pairwise ~ Treatment)
+
+# View the results of pairwise comparisons
+summary(pairwise_comparisons)
+
+
+diagnostic_plots_glm(model = quasi_model)
+
+ggsave(filename = "sym_link_soil_biology/Plots/model_diagnostics/model_diag_qbs_c_score.png", 
+       width = 10, height = 2.25)
+
+
+
+
+
+
+
+
+
+#__________________________________________####
+# QBS-e ####
+
+# ~ data ####
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/qbs_e_data.csv")
+
+
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$block <- as.factor(dat$block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                        levels = c("Conservation","Conventional"))
+
+
+
+
+
+
+
+
+
+# ~ Test for overdispersion ####
+
+names(dat)
+
+# Specify column numbers to test for overdispersion
+response_column_indices <- c(8:ncol(dat))  # Replace with the indices of the columns to test
+response_columns <- colnames(dat)[response_column_indices]  # Get the column names
+
+# Specify explanatory variables
+explanatory_columns <- c("Year", "Treatment")
+
+# Initialize a results list
+results_list <- lapply(response_columns, function(response_column) {
+  test_overdispersion(dat, response_column, explanatory_columns)
+})
+
+# Convert results into a dataframe
+results_df <- do.call(rbind, lapply(results_list, as.data.frame))
+
+# Print results
+print(results_df)
+
+
+
+
+
+
+
+# ~ QBS-e ####
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- 
+  dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n = n(),
+    mean = mean(qbs_score, na.rm = TRUE),
+    sd = sd(qbs_score, na.rm = TRUE)
+  ) %>%
+  mutate( se = sd/sqrt(n))  %>%
+  mutate( ic = se * qt((1-0.05)/2 + .5, n-1)) %>% 
+  arrange(Year)
+
+summ
+
+distribution_plots(data = dat, 
+                   variable = dat$qbs_score, 
+                   colour = dat$qbs_score)
+
+ggsave(filename = "sym_link_soil_biology/Plots/distributions/dist_qbs_e_score.png", width = 10, height = 2.25)
+
+
+
+# # Find the smallest nonzero value in the dataset
+# small_const <- min(dat$qbs_score[dat$qbs_score > 0]) * 0.01  # 1% of the smallest value
+# 
+# # Add this small constant to avoid zeros
+# dat$qbs_e_score_adj <- dat$qbs_score + small_const
+
+
+quasi_model <- glm(qbs_score ~ Treatment + as.factor(Year) + as.factor(block), 
+                   data = dat, 
+                   family = quasipoisson(link = "log"))
+
+# View summary
+summary(quasi_model)
+
+# Run pairwise comparisons for the 'Treatment' factor
+pairwise_comparisons <- emmeans(quasi_model, pairwise ~ Treatment)
+
+# View the results of pairwise comparisons
+summary(pairwise_comparisons)
+
+
+diagnostic_plots_glm(model = quasi_model)
+
+ggsave(filename = "sym_link_soil_biology/Plots/model_diagnostics/model_diag_qbs_e_score.png", 
+       width = 10, height = 2.25)
+
+
+
+
+
+
+
+
+#__________________________________________####
+# QBS-ar ####
+
+# ~ data ####
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/qbs_ar_score_data.csv")
+
+
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                        levels = c("Conservation","Conventional"))
+
+
+
+
+
+
+
+
+
+# ~ Test for overdispersion ####
+
+names(dat)
+
+# Specify column numbers to test for overdispersion
+response_column_indices <- c(19:ncol(dat))  # Replace with the indices of the columns to test
+response_columns <- colnames(dat)[response_column_indices]  # Get the column names
+
+# Specify explanatory variables
+explanatory_columns <- c("Year", "Treatment")
+
+# Initialize a results list
+results_list <- lapply(response_columns, function(response_column) {
+  test_overdispersion(dat, response_column, explanatory_columns)
+})
+
+# Convert results into a dataframe
+results_df <- do.call(rbind, lapply(results_list, as.data.frame))
+
+# Print results
+print(results_df)
+
+
+
+
+
+
+
+# ~ QBS-ar ####
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- 
+  dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n = n(),
+    mean = mean(qbs_score, na.rm = TRUE),
+    sd = sd(qbs_score, na.rm = TRUE)
+  ) %>%
+  mutate( se = sd/sqrt(n))  %>%
+  mutate( ic = se * qt((1-0.05)/2 + .5, n-1)) %>% 
+  arrange(Year)
+
+summ
+
+distribution_plots(data = dat, 
+                   variable = dat$qbs_score, 
+                   colour = dat$qbs_score)
+
+ggsave(filename = "sym_link_soil_biology/Plots/distributions/dist_qbs_ar_score.png", width = 10, height = 2.25)
+
+
+
+# # Find the smallest nonzero value in the dataset
+# small_const <- min(dat$qbs_score[dat$qbs_score > 0]) * 0.01  # 1% of the smallest value
+# 
+# # Add this small constant to avoid zeros
+# dat$qbs_e_score_adj <- dat$qbs_score + small_const
+
+
+quasi_model <- glm(qbs_score ~ Treatment + as.factor(Year) + as.factor(Block), 
+                   data = dat, 
+                   family = quasipoisson(link = "log"))
+
+# View summary
+summary(quasi_model)
+
+# Run pairwise comparisons for the 'Treatment' factor
+pairwise_comparisons <- emmeans(quasi_model, pairwise ~ Treatment)
+
+# View the results of pairwise comparisons
+summary(pairwise_comparisons)
+
+
+diagnostic_plots_glm(model = quasi_model)
+
+ggsave(filename = "sym_link_soil_biology/Plots/model_diagnostics/model_diag_qbs_ar_score.png", 
+       width = 10, height = 2.25)
+
+
+
+
+
+
+
+#__________________________________________####
+# Shannon Index ####
+
+# ~ data ####
+
+dat <- read.csv(file = "sym_link_soil_biology/Data/processed_data/shannon_data.csv")
+
+
+
+# remove NA's
+dat[is.na(dat)] <- 0
+
+
+dat$Year <- as.factor(dat$Year)
+dat$Treatment <- as.factor(dat$Treatment)
+dat$Block <- as.factor(dat$Block)
+
+
+dat$Treatment <- factor(dat$Treatment, 
+                        levels = c("Conservation","Conventional"))
+
+
+
+
+
+
+
+
+
+# ~ Test for overdispersion ####
+
+names(dat)
+
+# Specify column numbers to test for overdispersion
+response_column_indices <- 19  # Replace with the indices of the columns to test
+response_columns <- colnames(dat)[response_column_indices]  # Get the column names
+
+# Specify explanatory variables
+explanatory_columns <- c("Year", "Treatment")
+
+# Initialize a results list
+results_list <- lapply(response_columns, function(response_column) {
+  test_overdispersion(dat, response_column, explanatory_columns)
+})
+
+# Convert results into a dataframe
+results_df <- do.call(rbind, lapply(results_list, as.data.frame))
+
+# Print results
+print(results_df)
+
+
+
+
+
+
+
+# ~ Shannon index ####
+
+names(dat)
+
+# Calculates mean, sd, se and IC - block
+summ <- 
+  dat %>%
+  group_by(Treatment, Year) %>%
+  summarise( 
+    n = n(),
+    mean = mean(Shannon_Index, na.rm = TRUE),
+    sd = sd(Shannon_Index, na.rm = TRUE)
+  ) %>%
+  mutate( se = sd/sqrt(n))  %>%
+  mutate( ic = se * qt((1-0.05)/2 + .5, n-1)) %>% 
+  arrange(Year)
+
+summ
+
+distribution_plots(data = dat, 
+                   variable = dat$Shannon_Index, 
+                   colour = dat$Shannon_Index)
+
+ggsave(filename = "sym_link_soil_biology/Plots/distributions/dist_Shannon_Index.png", width = 10, height = 2.25)
+
+
+# Fit the linear mixed-effects model
+lm <- lmer(formula = Shannon_Index ~ Treatment + (1 | Block) + (1 | Year), 
+           data = dat)
+
+# Get the summary which includes p-values
+summary(lm)
+
+# You can also use anova to get Type III sums of squares and p-values
+anova(lm)
+
+# Calculate EMMs for Treatment
+emm_results <- emmeans(lm, ~ Treatment)
+
+# Pairwise comparisons
+pairwise_results <- pairs(emm_results)
+summary(pairwise_results)
+
+
+diagnostic_plots_glm(model = lm)
+
+ggsave(filename = "sym_link_soil_biology/Plots/model_diagnostics/model_diag_shannon_index.png", 
+       width = 10, height = 2.25)
+
+
+
+
+
+
+
+
+
 #__________________________________________####
 # Old code ####
 
