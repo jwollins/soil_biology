@@ -88,7 +88,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -133,7 +133,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -194,7 +194,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -239,7 +239,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -301,7 +301,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -346,7 +346,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -409,7 +409,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -452,7 +452,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -512,7 +512,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
@@ -555,7 +555,7 @@ summ <- worm_dat %>%
         caption = "") +
       theme_bw() +
       scale_fill_manual(values=c("turquoise3","tomato2"), 
-                        name = "Treatment") +
+                        name = NULL) +
       theme(strip.text.x = element_text(size = 12, 
                                         color = "black", 
                                         face = "bold.italic"), 
